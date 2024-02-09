@@ -32,7 +32,22 @@ wandb
 Please download weights using the authors' script. If there are problems, I've created [my local copy on Google drive](https://drive.google.com/drive/folders/1e2MXrnsdRoLMVVB0bf8Oq9e3kpS5KMQP?usp=sharing).
 
 
-Use this source face image: [img/5-10.png](img/5-10.png) (Or you can use your own one or generated one. Please don't use celebrity as we are interested in training of unknown face).
+Use this source face image: [img/5-10.png](img/5-10.png)
+
+Or you can use your own one or generated one. Please don't use celebrity as we are interested in training of unknown face.
+
+If would be very interesting if you use, for example, this repo, its colab or HuggigFace space: [https://github.com/TencentARC/PhotoMaker](https://github.com/TencentARC/PhotoMaker) to generate multiple photos of a single character and then average their arcface embeddings inside the face swap model like they do:
+
+[https://github.com/hcl14/ghost/blob/ea23cce2543a5933a22cbe98bb2973b8550a3ba1/utils/inference/core.py#L45](https://github.com/hcl14/ghost/blob/ea23cce2543a5933a22cbe98bb2973b8550a3ba1/utils/inference/core.py#L45)
+
+
+I provided a couple of results for 5-10.png, but they are not perfect:
+
+[img/5-10-1.png](img/5-10-1.png)
+[img/5-10-2.png](img/5-10-2.png)
+[img/5-10-3.png](img/5-10-3.png)
+[img/5-10-4.png](img/5-10-4.png)
+
 
 
 You should be able to inference swap with command like
