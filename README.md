@@ -213,3 +213,54 @@ You can see that with mask teeth are more accurate (they were taken from origina
 
 **Now you can use this script to create a dataset of swapped faces.** Celebrity face brings consistent face shape and some of its consistent features into many face poses. The dataset could be of course created by wrapping swapping and face enhancing repos into scripts, but the idea was to play with face processing python code. Also, re-detection of faces with different detectors is not a good idea, as the landmarks are a bit different, so swapped and upscaled faces also become less consistent.
 
+
+
+## Inferencing Stable Diffusion with diffusers package
+
+
+You can choose your own way to train character LoRA for Stable Diffusion 1.5 models. Try to use some newer model, than vanilla SD 1.5 model.
+
+Quck Hello World with Diffusers: [https://huggingface.co/blog/stable_diffusion](https://huggingface.co/blog/stable_diffusion).
+
+Civitai is a good source of SD models: [https://civitai.com/models/25694/epicrealism](https://civitai.com/models/25694/epicrealism).
+
+To download model in .safetensors format, you can right click on the download button, copy link, and then download it in terminal with "content disposition" keyword:
+
+```
+wget https://civitai.com/api/download/models/143906?type=Model&format=SafeTensor&size=pruned&fp=fp16 --content-disposition
+```
+
+To load SafeTensors to diffusers, [you can take a look into their syntax for .from_single_file()](https://huggingface.co/docs/diffusers/main/en/using-diffusers/using_safetensors)
+
+Diffusers normally attempt to download models from HuggigFace, e.g. in their example "runwayml/stable-diffusion-v1-5" is HuggingFacepath, where they lie as folders and consume a LOT of space (vanilla SD is ~50GB). If you have problems with loading, you will likely see weird errors with Http and huggingface packages.
+
+You can also take a look here [https://huggingface.co/docs/diffusers/using-diffusers/loading](https://huggingface.co/docs/diffusers/using-diffusers/loading)
+
+
+I invite you to discover the parameters of DiffusionPipeline youself from their source code.
+
+
+
+## Training LoRA
+
+Here is an example how to load LoRA into existing model by diffusers: [https://huggingface.co/docs/diffusers/v0.13.0/en/training/lora](https://huggingface.co/docs/diffusers/v0.13.0/en/training/lora)
+
+To train you lora, you can use Diffusers as well, but they do not do image captioning with BLIP, so, from my experience, it is hard for model to understand from your images what to learn. Also, the best result for diffusers training scripts comes with vanilla SD 1.5 model.
+
+
+There are many LoRA training notebooks and guidelines, including the ones to learn character face.You can start from:
+
+This notebook (may not work already due to dependency problems, you can try to run this setup locally):
+
+[https://colab.research.google.com/github/Linaqruf/kohya-trainer/blob/main/kohya-LoRA-dreambooth.ipynb](https://colab.research.google.com/github/Linaqruf/kohya-trainer/blob/main/kohya-LoRA-dreambooth.ipynb)
+
+EasyPhoto SD-Webui extension (again, may not work with latest versions of SD-Webui):
+
+[https://github.com/aigc-apps/sd-webui-EasyPhoto](https://github.com/aigc-apps/sd-webui-EasyPhoto)
+
+This guide [https://stable-diffusion-art.com/train-lora/](https://stable-diffusion-art.com/train-lora/)
+
+
+
+
+
