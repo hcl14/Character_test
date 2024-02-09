@@ -1,6 +1,6 @@
 # Training character LoRA on synthetic data
 
-This is a short research project with the aim to generate synthetic data and train Stable Diffusion LoRA on them.
+This is a short research assignment with the aim to generate synthetic data and train Stable Diffusion LoRA on them.
 
 
 ## Face swapping
@@ -43,3 +43,10 @@ python inference.py --image_to_image True --source_paths='5-10.png' --target_ima
 ```
 
 
+At first,
+
+**Please use face swapping functions from this repo to write python code which creates a dataset by swapping all the faces in "Taylor Swift" folder with out target face**. You can filter the ones which look broken or unrealistic.
+
+You will have something like this:
+
+![](img/swapped.jpg)
