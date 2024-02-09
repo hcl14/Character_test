@@ -72,7 +72,7 @@ As you can see, the resolution of the swapped face is not big, as swaps usually 
 ## Upscale face swapping results
 
 
-We need face upscaler. Clone one of these:
+We need face upscaler to make faces less blurry. Clone one of these:
 
 [https://github.com/sczhou/CodeFormer](https://github.com/sczhou/CodeFormer)
 
@@ -173,5 +173,43 @@ Face enhancement should give us some enhanced image:
 
 ## (Optional) Mouth mask to somewhat decrease mouth artifacts
 
+Facexlib uses [face parsing model](https://github.com/zllrunning/face-parsing.PyTorch) to accurately blend face:
 
+[https://github.com/xinntao/facexlib/blob/260620ae93990a300f4b16448df9bb459f1caba9/facexlib/utils/face_restoration_helper.py#L103](https://github.com/xinntao/facexlib/blob/260620ae93990a300f4b16448df9bb459f1caba9/facexlib/utils/face_restoration_helper.py#L103)
+
+```
+with torch.no_grad():
+    out = self.face_parse(face_input)[0]
+out = out.argmax(dim=1).squeeze().cpu().numpy()
+
+mask = np.zeros(out.shape)
+MASK_COLORMAP = [0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 0, 255, 0, 0, 0]
+for idx, color in enumerate(MASK_COLORMAP):
+    mask[out == idx] = color
+```
+
+There are different choices like parsent, BiSenet, etc. They might have their own alignment (but usually it's FFHQ).
+
+The result of face parsing model is usually ~20 channel image which is aggregated into a single channel with integer values. For BiSenet they are:
+
+```
+[(-1, 'unlabeled'), (0, 'background'), (1, 'skin'),
+(2, 'l_brow'), (3, 'r_brow'), (4, 'l_eye'), (5, 'r_eye'),
+(6, 'eye_g (eye glasses)'), (7, 'l_ear'), (8, 'r_ear'), (9, 'ear_r (ear ring)'),
+(10, 'nose'), (11, 'mouth'), (12, 'u_lip'), (13, 'l_lip'),
+(14, 'neck'), (15, 'neck_l (necklace)'), (16, 'cloth'),
+(17, 'hair'), (18, 'hat')])
+```
+
+So `MASK_COLORMAP[13]` is mouth, 14 is upper lip, etc.
+
+As you can see from the image above, mouth is not perfect - face swap models work bad with open mouth (face restoration as well, but little bit better).
+
+What I propose to research is to replace the mouth on swapped face with original mouth and teeth before sending the face to restoration model. For that, you can use face parsing mask, calculated on the source face before it was sent to face swap, and frames before and after swap. You migh probably want to dilate maks a bit or use blur kernel on it for smooth blending.
+
+You can see that with mask teeth are more accurate (they were taken from original image):
+![](img/comparsion_gfpgan_before_after_mouth_mask.png)
+
+
+**Now you can use this script to create a dataset of swapped faces.** Celebrity face brings consistent face shape and some of its consistent features into many face poses. The dataset could be of course created by wrapping swapping and face enhancing repos into scripts, but the idea was to play with face processing python code. Also, re-detection of faces with different detectors is not a good idea, as the landmarks are a bit different, so swapped and upscaled faces also become less consistent.
 
