@@ -89,11 +89,74 @@ The faces used as input to GPFGAN, Codeformer, Restoreformer models are 512x512 
 
 ![](img/alignment.jpg)
 
-They do a lot of other mathematics to align faces properly and blend them back
+They do a lot of other mathematics to align faces properly and blend them back.
+
+Our face swap uses its own face alignment (Insightface):
+
+[from insightface.utils import face_align](https://github.com/hcl14/ghost/blob/ea23cce2543a5933a22cbe98bb2973b8550a3ba1/insightface_func/face_detect_crop_multi.py#L9C1-L9C41)
+
+
+You can take a look into original repo, it also has template and does OpenCV warping to this template:
+
+[https://github.com/deepinsight/insightface/blob/01a34cd94f7b0f4a3f6c84ce4b988668ad7be329/python-package/insightface/utils/face_align.py#L6](https://github.com/deepinsight/insightface/blob/01a34cd94f7b0f4a3f6c84ce4b988668ad7be329/python-package/insightface/utils/face_align.py#L6)
+
+```
+arcface_dst = np.array(
+    [[38.2946, 51.6963], [73.5318, 51.5014], [56.0252, 71.7366],
+     [41.5493, 92.3655], [70.7299, 92.2041]],
+    dtype=np.float32)
+
+def estimate_norm(lmk, image_size=112,mode='arcface'):
+    assert lmk.shape == (5, 2)
+    assert image_size%112==0 or image_size%128==0
+    if image_size%112==0:
+        ratio = float(image_size)/112.0
+        diff_x = 0
+    else:
+        ratio = float(image_size)/128.0
+        diff_x = 8.0*ratio
+    dst = arcface_dst * ratio
+    dst[:,0] += diff_x
+    tform = trans.SimilarityTransform()
+    tform.estimate(lmk, dst)
+    M = tform.params[0:2, :]
+    return M
+
+def norm_crop(img, landmark, image_size=112, mode='arcface'):
+    M = estimate_norm(landmark, image_size, mode)
+    warped = cv2.warpAffine(img, M, (image_size, image_size), borderValue=0.0)
+    return warped
+```
 
 
 
+What I propose is to try to embed face swap into Face restoration pipeline, i.e. in case of Codeformer we can enter somewhere here
 
+[https://github.com/sczhou/CodeFormer/blob/8392d0334956108ab53d9439c4b9fc9c4af0d66d/inference_codeformer.py#L197](https://github.com/sczhou/CodeFormer/blob/8392d0334956108ab53d9439c4b9fc9c4af0d66d/inference_codeformer.py#L197)
+
+or we can add our fase swapping code directly into Facexlib somewhere here
+
+[https://github.com/xinntao/facexlib/blob/260620ae93990a300f4b16448df9bb459f1caba9/facexlib/utils/face_restoration_helper.py#L259](https://github.com/xinntao/facexlib/blob/260620ae93990a300f4b16448df9bb459f1caba9/facexlib/utils/face_restoration_helper.py#L259)
+
+
+We have all the face landmarks and all the warping matrices, so we can in theory, do the following:
+
+1. Detect faces, extract faces and landmarks
+2. Warp faces to swap (insightface) alignment
+3. Perform face swap
+4. Warp swapped faces to FFHQ alignment
+5. Enhance faces using GFPGAN/Codeformer/etc
+6. Warp faces back, for that we ideally need to calculate the proper warping matrix
+
+Better to avoid multiple warpings for the same image, because it will create additional blur due to interpolation.
+
+Face enhancement should give us some enhanced image:
+
+![](img/enhanced.jpg)
+
+
+
+## (Optional) Mouth mask to somewhat decrease mouth artifacts
 
 
 
