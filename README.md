@@ -32,8 +32,7 @@ wandb
 Please download weights using the authors' script. If there are problems, I've created [my local copy on Google drive](https://drive.google.com/drive/folders/1e2MXrnsdRoLMVVB0bf8Oq9e3kpS5KMQP?usp=sharing).
 
 
-Use this source face image: [img/5-10.png](img/5-10.png) (Or you can use your own one or generated one).
-
+Use this source face image: [img/5-10.png](img/5-10.png) (Or you can use your own one or generated one. Please don't use celebrity as we are interested in training of unknown face).
 
 
 You should be able to inference swap with command like
@@ -50,3 +49,51 @@ At first,
 You will have something like this:
 
 ![](img/swapped.jpg)
+
+
+As you can see, the resolution of the swapped face is not big, as swaps usually operate in 224x224 or 256x256 resolution.
+
+
+## Upscale face swapping results
+
+
+We need face upscaler. Clone one of these:
+
+[https://github.com/sczhou/CodeFormer](https://github.com/sczhou/CodeFormer)
+
+[https://github.com/TencentARC/GFPGAN](https://github.com/TencentARC/GFPGAN)
+
+[https://github.com/wzhouxiff/RestoreFormerPlusPlus](https://github.com/wzhouxiff/RestoreFormerPlusPlus)
+
+
+You can already use them in bash script to restore faces on the previously generated dataset by disabling RealESRGAN background restoration.
+
+However, I propose to dabble a bit in the code.
+
+They all use the package called `facexlib` to make necessary image transormations and run super resolution model.
+
+```
+from facexlib.utils.face_restoration_helper import FaceRestoreHelper
+```
+
+Source code:
+
+[https://github.com/xinntao/facexlib/blob/master/facexlib/utils/face_restoration_helper.py](https://github.com/xinntao/facexlib/blob/master/facexlib/utils/face_restoration_helper.py)
+
+They receive 5 facial landmarks from face detector (usually RetinaFace) and align faces by warping their landmarks to template:
+
+1.[https://github.com/xinntao/facexlib/blob/260620ae93990a300f4b16448df9bb459f1caba9/facexlib/utils/face_restoration_helper.py#L73](https://github.com/xinntao/facexlib/blob/260620ae93990a300f4b16448df9bb459f1caba9/facexlib/utils/face_restoration_helper.py#L73)
+2.[https://github.com/xinntao/facexlib/blob/260620ae93990a300f4b16448df9bb459f1caba9/facexlib/utils/face_restoration_helper.py#L244](https://github.com/xinntao/facexlib/blob/260620ae93990a300f4b16448df9bb459f1caba9/facexlib/utils/face_restoration_helper.py#L244)
+
+The faces used as input to GPFGAN, Codeformer, Restoreformer models are 512x512 and have [FFHQ dataset alignment](https://github.com/happy-jihye/FFHQ-Alignment):
+
+![](img/alignment.jpg)
+
+They do a lot of other mathematics to align faces properly and blend them back
+
+
+
+
+
+
+
