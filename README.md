@@ -5,7 +5,7 @@ This is a short research project with the aim to generate synthetic data and tra
 
 ## Face swapping
 
-I propose to start with cloning a certain face swapper model like [https://github.com/ai-forever/ghost](https://github.com/ai-forever/ghost)
+I propose to start with cloning a certain face swapper model like [https://github.com/ai-forever/ghost](https://github.com/ai-forever/ghost) (My [fork](https://github.com/hcl14/ghost)).
 
 Clone this repo. It is quite old, so their Colab does not work, as well as requirements.txt are ill-written.
 
@@ -31,6 +31,8 @@ wandb
 
 Please download weights using the authors' script. If there are problems, I've created [my local copy on Google drive](https://drive.google.com/drive/folders/1e2MXrnsdRoLMVVB0bf8Oq9e3kpS5KMQP?usp=sharing).
 
+
+Use this source face image: [img/5-10.png](img/5-10.png) (Or you can use your own one or generated one).
 
 
 
