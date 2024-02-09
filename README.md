@@ -188,7 +188,7 @@ for idx, color in enumerate(MASK_COLORMAP):
     mask[out == idx] = color
 ```
 
-There are different choices like parsent, BiSenet, etc. They might have their own alignment (but usually it's FFHQ).
+There are different choices like parsenet, BiSenet, etc. They might have their own alignment (but usually it's FFHQ).
 
 The result of face parsing model is usually ~20 channel image which is aggregated into a single channel with integer values. For BiSenet they are:
 
